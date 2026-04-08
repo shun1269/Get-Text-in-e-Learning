@@ -106,25 +106,4 @@
         });
     }
 
-    const observer = new MutationObserver(() => {
-        scheduleExtractNextFrame();
-
-        // ページ送り直後にDOM反映が遅れる場合の再抽出
-        clearTimeout(delayedTimer);
-        delayedTimer = window.setTimeout(scheduleExtractNextFrame, 220);
-    });
-
-    const config = { childList: true, subtree: true, characterData: true, attributes: true };
-    observer.observe(targetNode, config);
-
-    // 初期表示分
-    extractSpeech();
-
-    // 再実行時に二重監視にならないように後始末関数を保持
-    window[INSTANCE_KEY] = {
-        cleanup() {
-            observer.disconnect();
-            clearTimeout(delayedTimer);
-        },
-    };
 })();

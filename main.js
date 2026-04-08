@@ -64,13 +64,17 @@
 
         allElements.forEach((el) => {
             const currentText = normalizeText(el.innerText);
-            const parent = el.parentElement;
-            const parentClass = parent ? parent.className : "";
+            const textContainer = el.closest(".text");
+            const caseContainer = el.closest(".textArea.Case");
+            const parentClass = textContainer ? textContainer.className : "";
 
-            // セリフ親要素: 例) "text text1 T", "text text2 B", "text text3 A"
-            const isSpeechBubble = /(?:^|\s)text(?:\s|$)/.test(parentClass)
+            // 吹き出しは .textArea.Case 配下の .text.textN 系だけを対象にする。
+            const isSpeechBubble = Boolean(caseContainer)
+                && /(?:^|\s)text(?:\s|$)/.test(parentClass)
                 && /(?:^|\s)text\d+(?:\s|$)/.test(parentClass);
-            const isNumberOnly = /^\d+(\s*\/\s*\d+)?$/.test(currentText);
+
+            // 1/42, 1 / 42, １／４２ などページ番号形式を除外。
+            const isNumberOnly = /^[\d０-９]+(?:\s*[\/／]\s*[\d０-９]+)?$/.test(currentText);
 
             const signature = currentPage + "::" + currentText;
 
